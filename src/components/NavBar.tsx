@@ -1,7 +1,8 @@
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { useEffect, type Dispatch, type SetStateAction } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
+import { useAuth } from "../context/AuthProvider";
 
 function NavBar({
 	open,
@@ -10,6 +11,9 @@ function NavBar({
 	open: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
+	const navigate = useNavigate();
+	const { setAuth } = useAuth();
+
 	const navLinks = [
 		{
 			id: 0,
@@ -18,18 +22,13 @@ function NavBar({
 		},
 		{
 			id: 1,
-			name: "Users",
+			name: "users",
 			link: "/users",
 		},
 		{
 			id: 2,
 			name: "AddUsers",
 			link: "/add-user",
-		},
-		{
-			id: 3,
-			name: "profile",
-			link: "/profile",
 		},
 	];
 
@@ -103,6 +102,22 @@ function NavBar({
 											</motion.li>
 										);
 									})}
+									<motion.button
+										initial={{ opacity: 0, x: 100 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{
+											delay: 0.2 * navLinks.length,
+											ease: [0.17, 0.55, 0.55, 1],
+										}}
+										onClick={() => {
+											localStorage.clear();
+											navigate("/login");
+											setAuth(null);
+										}}
+										className={`relative  text-lg before:absolute before:bottom-[-5px] before:left-0 before:h-[3px] before:w-0 before:bg-slate-950 before:transition-all before:duration-300 hover:before:w-full `}
+									>
+										log Out
+									</motion.button>
 								</ul>
 							</motion.div>
 						</>

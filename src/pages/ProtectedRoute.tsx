@@ -9,6 +9,8 @@ export default function ProtectedRoute({
 }) {
 	const location = useLocation();
 	const { auth, setAuth } = useAuth();
+	console.log(auth);
+	
 
 	// Safely retrieve auth data from localStorage and parse it
 	useEffect(() => {

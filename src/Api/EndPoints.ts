@@ -12,20 +12,31 @@ interface UserForm {
 
 // Function for handling sign-in requests
 export const FormSignIn = async (formData: {
-	username: string;
-	password: string;
-}): Promise<unknown> => {
-	try {
-		const res = await axios.post("https://dummyjson.com/auth/login", formData);
-		console.log(res);
-		return res; // `res.data` for accessing response data
-	} catch (error: unknown) {
-		if (axios.isAxiosError(error)) {
-			return (error as AxiosError).response || "Failed in Sign In";
-		}
-		return "Failed in Sign In";
-	}
+  username: string;
+  password: string;
+}): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  image: string;
+}> => {
+  try {
+    const res = await axios.post("https://dummyjson.com/auth/login", formData);
+    console.log(res);
+    return res.data; // Return `res.data` to get the actual response body
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      throw new Error((error.response?.data as string) || "Failed in Sign In");
+    }
+    throw new Error("Failed in Sign In");
+  }
 };
+
 
 // Function to fetch all users
 export const getAllUsers = async (): Promise<unknown> => {

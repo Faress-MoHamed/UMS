@@ -9,10 +9,13 @@ import { useMutation } from "@tanstack/react-query";
 // User type definition
 interface User {
 	id: number;
+	firstName: string;
+	lastName: string;
 	username: string;
 	email: string;
 	phone: string;
 	ssn: string;
+	age: number;
 	birthDate: string;
 	image: string;
 }
@@ -28,7 +31,9 @@ export default function Users() {
 		const fetchData = async () => {
 			try {
 				const res = await getAllUsers();
-				setUsers(res);
+				if (Array.isArray(res)) {
+					setUsers(res);
+				}
 			} catch (err) {
 				console.error(err);
 				toast.error("Failed to fetch users");

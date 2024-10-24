@@ -17,15 +17,71 @@ export default function Sign() {
 	const navigate = useNavigate();
 	const { setAuth } = useAuth();
 
-	const { mutate, isPending } = useMutation<unknown, number, UserForm>({
+	// Define a type for the expected response
+	interface SignInResponse {
+		accessToken: string;
+		refreshToken: string;
+		id: number;
+		username: string;
+		email: string;
+		firstName: string;
+		lastName: string;
+		gender: string;
+		image: string;
+	}
+
+	// Define a type for the expected response
+	interface SignInResponse {
+		accessToken: string;
+		refreshToken: string;
+		id: number;
+		username: string;
+		email: string;
+		firstName: string;
+		lastName: string;
+		gender: string;
+		image: string;
+	}
+
+	const { mutate, isPending } = useMutation<SignInResponse, unknown, UserForm>({
 		mutationKey: ["signin"],
 		mutationFn: async (data) => {
 			const res = await FormSignIn(data);
-			return res;
+			// Assuming response.json() returns the correct SignInResponse
+			if (!res) {
+				throw new Error("Sign in failed");
+			}
+			return res; // Expecting `FormSignIn` to return SignInResponse type
 		},
 		onSuccess: (res) => {
-			setAuth(res.data);
-			localStorage.setItem("user", JSON.stringify(res.data));
+			// Correctly destructure the response
+			const {
+				accessToken,
+				refreshToken,
+				id,
+				username,
+				email,
+				firstName,
+				lastName,
+				gender,
+				image,
+			} = res;
+
+			// Assuming `setAuth` expects an object with these fields
+			const authData = {
+				accessToken,
+				refreshToken,
+				id,
+				username,
+				email,
+				firstName,
+				lastName,
+				gender,
+				image,
+			};
+			setAuth(authData);
+
+			localStorage.setItem("user", JSON.stringify(authData));
 			navigate("/");
 			toast.success("Sign in successful");
 		},

@@ -8,9 +8,15 @@ interface AuthContextType {
 
 // Define the type for the authentication data (you can adjust this to your actual auth structure)
 interface AuthState {
-	userId: string;
-	token: string;
-	roles: string[];
+	accessToken: string;
+	refreshToken: string;
+	id: number;
+	username: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+	gender: string;
+	image: string;
 }
 
 // Create the AuthContext with a default value of null

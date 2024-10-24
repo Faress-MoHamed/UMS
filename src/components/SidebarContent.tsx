@@ -4,16 +4,18 @@ import { Link, useLocation, useNavigate } from "react-router-dom"; // Import use
 import logo from "../assets/9c5672219055d43b0ffb2caf907f4b0d.jpeg";
 import usersIcon from "../assets/usersIcon.svg";
 import AddUserIcon from "../assets/AddUserIcon.svg";
-import ProfileIcon from "../assets/ProfileIcon.svg";
 import LogoutIcon from "../assets/LogoutIcon.svg";
 import { IoHomeOutline } from "react-icons/io5";
 import "./active.css"; // Custom CSS for active styles
 import { GoSidebarCollapse } from "react-icons/go";
+import { useAuth } from "../context/AuthProvider";
 
 export default function SidebarContent() {
 	const [collapsed, setCollapsed] = useState(false);
 	const location = useLocation(); // Get the current location
 	const navigate = useNavigate();
+	const { setAuth } = useAuth();
+
 	const handleCollapse = () => {
 		setCollapsed(!collapsed);
 	};
@@ -108,19 +110,6 @@ export default function SidebarContent() {
 					>
 						{!collapsed && "Add User"}
 					</MenuItem>
-
-					<MenuItem
-						active={location.pathname.includes("/profile")}
-						icon={<img src={ProfileIcon} alt="profile" />}
-						className={`${
-							location.pathname.includes("/profile")
-								? "bg-[#FEAF00]"
-								: "text-gray-700"
-						} transition-colors duration-300 rounded-[4px] flex items-center justify-center`}
-						component={<Link to="/profile" className="w-full !p-0" />}
-					>
-						{!collapsed && "Profile"}
-					</MenuItem>
 				</Menu>
 			</div>
 
@@ -133,6 +122,7 @@ export default function SidebarContent() {
 						onClick={() => {
 							localStorage.clear();
 							navigate("/login");
+							setAuth(null);
 						}}
 					>
 						{!collapsed && "Logout"}
