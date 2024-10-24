@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { getAllUsers, DeleteUser } from "../Api/EndPoints";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,20 +37,24 @@ export default function Users() {
 		fetchData();
 	}, []);
 
-	const { isLoading: deleteUserPending, mutate: deleteUserFunction } =
-		useMutation<void, unknown, number, boolean>({
-			mutationKey: ["deleteUser"],
-			mutationFn: async (id: number) => {
-				await DeleteUser(id);
-			},
-			onSuccess: (_, id) => {
-				toast.success("User deleted successfully");
-				setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-			},
-			onError: () => {
-				toast.error("Error deleting user");
-			},
-		});
+	const { mutate: deleteUserFunction } = useMutation<
+		void,
+		unknown,
+		number,
+		boolean
+	>({
+		mutationKey: ["deleteUser"],
+		mutationFn: async (id: number) => {
+			await DeleteUser(id);
+		},
+		onSuccess: (_, id) => {
+			toast.success("User deleted successfully");
+			setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+		},
+		onError: () => {
+			toast.error("Error deleting user");
+		},
+	});
 
 	// Pagination logic
 	const indexOfLastUser = currentPage * usersPerPage;
@@ -97,7 +101,6 @@ export default function Users() {
 								key={user.id}
 								user={user}
 								deleteUser={deleteUserFunction}
-								pending={deleteUserPending}
 								setUser={setUser}
 								navigate={navigate}
 							/>
@@ -130,21 +133,23 @@ export default function Users() {
 	);
 }
 
+interface UserForm {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+	age: string | number;
+	phone: string;
+	birthDate: string;
+}
 interface UserCardProps {
 	user: User;
-	setUser: (user: User) => void;
-	pending: boolean;
+	setUser: Dispatch<SetStateAction<UserForm | null>>;
 	deleteUser: (id: number) => void;
 	navigate: (path: string) => void;
 }
 
-const UserCard = ({
-	user,
-	setUser,
-	pending,
-	deleteUser,
-	navigate,
-}: UserCardProps) => {
+const UserCard = ({ user, setUser, deleteUser, navigate }: UserCardProps) => {
 	return (
 		<tr className="border-b hover:bg-gray-50">
 			<td className="py-2 px-4">
@@ -175,11 +180,8 @@ const UserCard = ({
 						<FiEdit2 className="w-5 h-5" />
 					</button>
 					<button
-						disabled={pending}
 						onClick={() => deleteUser(user.id)}
-						className={`text-red-500 hover:text-red-600 ${
-							pending ? "opacity-50 cursor-not-allowed" : ""
-						}`}
+						className={`text-red-500 hover:text-red-600 `}
 					>
 						<FiTrash2 className="w-5 h-5" />
 					</button>

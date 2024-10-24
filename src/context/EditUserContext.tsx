@@ -1,9 +1,19 @@
 import { createContext, useContext, useState } from "react";
 
+interface UserForm {
+	id: number;
+	firstName: string;
+	lastName: string;
+	email: string;
+	age: string | number;
+	phone: string;
+	birthDate: string;
+}
+
 // Define the context type
 interface EditUserContextType {
-	User: boolean;
-	setUser: React.Dispatch<React.SetStateAction<boolean>>;
+	User: UserForm | null; // Updated to allow null
+	setUser: React.Dispatch<React.SetStateAction<UserForm | null>>; // Updated to allow null
 }
 
 // Create the context with default values
@@ -26,7 +36,7 @@ export const EditUserProvider = ({
 }: {
 	children: React.ReactNode;
 }) => {
-	const [User, setUser] = useState(false);
+	const [User, setUser] = useState<UserForm | null>(null);
 
 	return (
 		<EditUserContext.Provider value={{ User, setUser }}>

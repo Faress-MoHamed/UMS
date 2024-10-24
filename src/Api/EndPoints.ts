@@ -1,17 +1,20 @@
 import axios, { AxiosError } from "axios";
 
-// Define a UserForm interface to structure user data
 interface UserForm {
+	id: number;
 	firstName: string;
 	lastName: string;
 	email: string;
 	age: string | number;
-	phoneNumber: string;
+	phone: string;
 	birthDate: string;
 }
 
 // Function for handling sign-in requests
-export const FormSignIn = async (formData: UserForm): Promise<unknown> => {
+export const FormSignIn = async (formData: {
+	username: string;
+	password: string;
+}): Promise<unknown> => {
 	try {
 		const res = await axios.post("https://dummyjson.com/auth/login", formData);
 		console.log(res);
@@ -66,7 +69,7 @@ export const AddNewUser = async (data: UserForm): Promise<unknown> => {
 // Function to edit an existing user
 export const EditUser = async (
 	data: Partial<UserForm>,
-	id: number
+	id: number | undefined
 ): Promise<unknown> => {
 	try {
 		const res = await axios.patch(`https://dummyjson.com/users/${id}`, data);

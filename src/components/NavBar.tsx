@@ -1,9 +1,15 @@
 import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 import { NavLink } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 
-function NavBar({ open, setOpen }) {
+function NavBar({
+	open,
+	setOpen,
+}: {
+	open: boolean;
+	setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
 	const navLinks = [
 		{
 			id: 0,
@@ -37,7 +43,7 @@ function NavBar({ open, setOpen }) {
 	}, [open, controls]);
 
 	function handleClose() {
-		setOpen((e) => !e);
+		setOpen((e: unknown) => !e);
 	}
 
 	return (

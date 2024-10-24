@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useAuth } from "../context/AuthProvider"; // Adjust import as necessary
+import { useAuth } from "../context/AuthProvider"; // Adjust the import as necessary
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedRoute({
@@ -9,43 +9,38 @@ export default function ProtectedRoute({
 }) {
 	const location = useLocation();
 	const { auth, setAuth } = useAuth();
-	const storedAuth = localStorage?.getItem("user");
-	const parsedAuth = JSON.parse(storedAuth);
 
-  console.log(!parsedAuth);
-
+	// Safely retrieve auth data from localStorage and parse it
 	useEffect(() => {
+		const storedAuth = localStorage?.getItem("user");
 		if (storedAuth) {
 			try {
-				setAuth(parsedAuth); // This should correctly set the auth
-				// console.log("Parsed Auth:", parsedAuth);
+				const parsedAuth = JSON.parse(storedAuth);
+				setAuth(parsedAuth); // Set the auth state with the parsed value
 			} catch (error) {
 				console.error("Error parsing auth from localStorage:", error);
+				setAuth(null); // Reset auth in case of an error
 			}
+		} else {
+			setAuth(null); // Ensure auth is null if nothing is found
 		}
-	}, []);
+	}, [setAuth]);
 
+	// Logging changes to the auth state for debugging purposes
 	useEffect(() => {
 		console.log("Auth state updated:", auth);
 	}, [auth]);
 
-	// Redirect logic for logged-in users trying to access the login page
-	if (!!parsedAuth && location.pathname === "/login") {
+	// Redirect authenticated users trying to access the login page
+	if (auth && location.pathname === "/login") {
 		return <Navigate to="/" replace />;
 	}
 
-	// // Redirect logic for unauthenticated users trying to access protected routes
-	// if (!parsedAuth) {
-	// 	return <Navigate to="/login" replace />;
-	// }
+	// Redirect unauthenticated users trying to access protected routes
+	if (!auth && location.pathname !== "/login") {
+		return <Navigate to="/login" replace />;
+	}
 
-	return (
-		<>
-			{!parsedAuth && location.pathname !== "/login" ? (
-				<Navigate to="/login" replace />
-			) : (
-				children
-			)}
-		</>
-	); // Render children if authenticated
+	// Render children if authenticated, or when on the login page
+	return <>{children}</>;
 }

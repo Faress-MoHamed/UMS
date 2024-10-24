@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useLocation to detect active path
-import Header from "./Header";
 import logo from "../assets/9c5672219055d43b0ffb2caf907f4b0d.jpeg";
 import usersIcon from "../assets/usersIcon.svg";
 import AddUserIcon from "../assets/AddUserIcon.svg";

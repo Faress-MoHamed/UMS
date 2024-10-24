@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { AddNewUser, EditUser } from "../Api/EndPoints";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useEditUser } from "../context/EditUserContext";
+import { AddNewUser, EditUser } from "../Api/EndPoints";
 import { format } from "date-fns";
 import { useEffect } from "react";
 
@@ -14,16 +14,18 @@ interface UserType {
 	firstName: string;
 	lastName: string;
 	email: string;
-	age: number;
+	age: string | number;
 	phone: string;
 	birthDate: string;
 }
+
 interface UserForm {
+	id: number;
 	firstName: string;
 	lastName: string;
 	email: string;
 	age: string | number;
-	phoneNumber: string;
+	phone: string;
 	birthDate: string;
 }
 
@@ -36,26 +38,43 @@ const validationSchema = Yup.object().shape({
 		.positive("Age must be positive")
 		.integer("Age must be an integer")
 		.required("Age is required"),
-	phoneNumber: Yup.string().required("Phone Number is required"),
+	phone: Yup.string().required("Phone Number is required"),
 	birthDate: Yup.date().required("Birth Date is required"),
 });
 
 export default function AddUser() {
 	const navigate = useNavigate();
-	const { User, setUser } = useEditUser() as { User: UserType | null };
-	console.log(User?.firstName);
-	const initialValues = {
+	const { User, setUser } = useEditUser();
+
+	const initialValues: UserForm = {
+		id: User?.id || 0,
 		firstName: User?.firstName || "",
 		lastName: User?.lastName || "",
 		email: User?.email || "",
-		age: User?.age || "",
-		phoneNumber: User?.phone || "",
+		age: User?.age || "", // If age is optional, ensure it's handled
+		phone: User?.phone || "",
 		birthDate: User?.birthDate
 			? format(new Date(User.birthDate), "yyyy-MM-dd")
 			: "",
 	};
 
-	const { mutate: AddUserFunction, isPending: AddUserPending } = useMutation({
+	const formik = useFormik({
+		initialValues,
+		validationSchema,
+		onSubmit: async (values: UserForm) => {
+			if (User && User.id) {
+				// Ensure User and User.id are valid
+				await EditUserFunction(values);
+			} else {
+				await AddUserFunction(values);
+			}
+		},
+	});
+	const { mutate: AddUserFunction, isPending: AddUserPending } = useMutation<
+		unknown,
+		boolean,
+		UserType
+	>({
 		mutationKey: ["addUser"],
 		mutationFn: async (data: UserType) => await AddNewUser(data),
 		onSuccess: () => {
@@ -65,7 +84,11 @@ export default function AddUser() {
 		onError: () => toast.error("Error adding user"),
 	});
 
-	const { mutate: EditUserFunction, isPending: EditUserPending } = useMutation({
+	const { mutate: EditUserFunction, isPending: EditUserPending } = useMutation<
+		unknown,
+		boolean,
+		UserType
+	>({
 		mutationKey: ["editUser"],
 		mutationFn: async (data: UserType) => await EditUser(data, User?.id),
 		onSuccess: () => {
@@ -75,20 +98,8 @@ export default function AddUser() {
 		onError: () => toast.error("Error editing user"),
 	});
 
-	const formik = useFormik({
-		initialValues,
-		validationSchema,
-		onSubmit: async (values: UserForm) => {
-			if (User) {
-				await EditUserFunction(values);
-			} else {
-				await AddUserFunction(values);
-			}
-		},
-	});
-
 	useEffect(() => {
-		return setUser({});
+		return () => setUser(null); // Reset the user on unmount
 	}, [setUser]);
 
 	return (
@@ -117,7 +128,11 @@ export default function AddUser() {
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Enter your First Name"
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.firstName && formik.errors.firstName
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
 							{formik.touched.firstName && formik.errors.firstName && (
 								<p className="text-red-500">{formik.errors.firstName}</p>
@@ -140,7 +155,11 @@ export default function AddUser() {
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Enter your Last Name"
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.lastName && formik.errors.lastName
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
 							{formik.touched.lastName && formik.errors.lastName && (
 								<p className="text-red-500">{formik.errors.lastName}</p>
@@ -163,7 +182,11 @@ export default function AddUser() {
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Enter your Email"
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.email && formik.errors.email
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
 							{formik.touched.email && formik.errors.email && (
 								<p className="text-red-500">{formik.errors.email}</p>
@@ -186,7 +209,11 @@ export default function AddUser() {
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Enter your Age"
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.age && formik.errors.age
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
 							{formik.touched.age && formik.errors.age && (
 								<p className="text-red-500">{formik.errors.age}</p>
@@ -196,23 +223,27 @@ export default function AddUser() {
 						{/* Phone Number */}
 						<div>
 							<label
-								htmlFor="phoneNumber"
+								htmlFor="phone"
 								className="block text-sm font-medium text-gray-600 mb-1"
 							>
 								Phone Number
 							</label>
 							<input
 								type="text"
-								id="phoneNumber"
-								name="phoneNumber"
-								value={formik.values.phoneNumber}
+								id="phone"
+								name="phone"
+								value={formik.values.phone}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Enter your Phone Number"
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.phone && formik.errors.phone
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
-							{formik.touched.phoneNumber && formik.errors.phoneNumber && (
-								<p className="text-red-500">{formik.errors.phoneNumber}</p>
+							{formik.touched.phone && formik.errors.phone && (
+								<p className="text-red-500">{formik.errors.phone}</p>
 							)}
 						</div>
 
@@ -231,7 +262,11 @@ export default function AddUser() {
 								value={formik.values.birthDate}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
-								className="w-full px-3 h-[44px] bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className={`w-full px-3 h-[44px] bg-gray-100 border ${
+									formik.touched.birthDate && formik.errors.birthDate
+										? "border-red-500"
+										: "border-gray-300"
+								} rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500`}
 							/>
 							{formik.touched.birthDate && formik.errors.birthDate && (
 								<p className="text-red-500">{formik.errors.birthDate}</p>
@@ -239,14 +274,17 @@ export default function AddUser() {
 						</div>
 					</div>
 
-					{/* Submit Button */}
-					<div className="mt-10 text-center ">
+					<div className="mt-6">
 						<button
 							type="submit"
 							disabled={AddUserPending || EditUserPending}
-							className="w-full md:w-[200px] bg-yellow-500 text-white h-[44px] px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50 transition duration-200"
+							className="px-6 py-2 bg-yellow-500 text-white font-bold rounded-md hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-500"
 						>
-							{User ? "Edit" : "Save"}
+							{AddUserPending || EditUserPending
+								? "Submitting..."
+								: User
+								? "Update User"
+								: "Add User"}
 						</button>
 					</div>
 				</form>

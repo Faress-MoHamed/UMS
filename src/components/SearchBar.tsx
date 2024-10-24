@@ -1,8 +1,12 @@
-import { BiBell, BiMenu, BiSearch } from "react-icons/bi";
+import { BiMenu, BiSearch } from "react-icons/bi";
 import { IoChevronBackCircleOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
-export default function SearchBar({ setOpen }) {
+export default function SearchBar({
+	setOpen,
+}: {
+	setOpen: (open: boolean) => void;
+}) {
 	const navigate = useNavigate();
 
 	return (

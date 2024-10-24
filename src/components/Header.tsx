@@ -1,6 +1,15 @@
-import React from "react";
+import type { CSSProperties } from "react";
+import type React from "react";
 
-export default function Header({ children, className, styling }) {
+export default function Header({
+	children,
+	className,
+	styling,
+}: {
+	children: React.ReactNode;
+	className?: string;
+	styling?: CSSProperties;
+}) {
 	return (
 		<div className="border-l-[6px] border-[#F8D442]">
 			<p

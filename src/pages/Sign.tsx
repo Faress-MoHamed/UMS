@@ -8,11 +8,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { useMutation } from "@tanstack/react-query";
 
+interface UserForm {
+	username: string;
+	password: string;
+}
+
 export default function Sign() {
 	const navigate = useNavigate();
 	const { setAuth } = useAuth();
 
-	const { mutate, isPending } = useMutation({
+	const { mutate, isPending } = useMutation<unknown, number, UserForm>({
 		mutationKey: ["signin"],
 		mutationFn: async (data) => {
 			const res = await FormSignIn(data);
@@ -37,7 +42,7 @@ export default function Sign() {
 				.min(8, "the min password length 8 characters")
 				.required("Password is required"),
 		}),
-		onSubmit: async (values) => {
+		onSubmit: async (values: { username: string; password: string }) => {
 			mutate(values);
 		},
 	});
