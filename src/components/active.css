@@ -1,0 +1,10 @@
+.active {
+	background-color: #ffffff !important;
+	color: #333 !important;
+}
+.ps-menu-button:hover {
+	background-color: #feae0061 !important;
+}
+.ps-menu-button {
+	transition: background-color 0.2s ease-in-out;
+}
