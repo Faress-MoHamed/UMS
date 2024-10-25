@@ -8,6 +8,7 @@ import { IoHomeOutline } from "react-icons/io5";
 import "./active.css"; // Custom CSS for active styles
 import { GoSidebarCollapse } from "react-icons/go";
 import { useAuth } from "../context/AuthProvider";
+import { CgProfile } from "react-icons/cg";
 
 export default function SidebarContent() {
 	const [collapsed, setCollapsed] = useState(false);
@@ -23,7 +24,7 @@ export default function SidebarContent() {
 		<Sidebar
 			collapsed={collapsed}
 			backgroundColor="#F2EAE1"
-			className={`h-screen fixed md:block hidden top-0 left-0 bg-[#F2EAE1] font-Montserrat transition-all duration-300 ${
+			className={`h-screen !sticky md:block hidden top-0 left-0 bg-[#F2EAE1] font-Montserrat transition-all duration-300 ${
 				collapsed ? "w-[80px] p-1" : "w-[250px] p-3"
 			}`}
 		>
@@ -111,6 +112,18 @@ export default function SidebarContent() {
 						component={<Link to="/add-user" className="w-full !p-0" />}
 					>
 						{!collapsed && "Add User"}
+					</MenuItem>
+					<MenuItem
+						active={location.pathname.includes("/profile")}
+						icon={<CgProfile />}
+						className={`${
+							location.pathname.includes("/profile")
+								? "bg-[#FEAF00]"
+								: "text-gray-700"
+						} transition-colors duration-300 rounded-[4px] flex items-center justify-center`}
+						component={<Link to="/profile" className="w-full !p-0" />}
+					>
+						{!collapsed && "profile"}
 					</MenuItem>
 				</Menu>
 			</div>
