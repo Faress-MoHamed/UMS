@@ -2,6 +2,7 @@ import { UsersIcon, UserPlusIcon, BookOpenIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../Api/EndPoints";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 // Define types for the User and Stat objects
 interface User {
@@ -18,18 +19,17 @@ interface Stat {
 }
 
 export default function Dashboard() {
-const [users, setUsers] = useState<User[]>([]); // Remove 'unknown'
-
-useEffect(() => {
-	const fetchData = async () => {
-		const res = await getAllUsers();
-		if (Array.isArray(res)) {
-			setUsers(res); // Ensure 'res' is an array before setting the state
-		}
-	};
-	fetchData();
-}, []);
-
+	const [users, setUsers] = useState<User[]>([]); // Remove 'unknown'
+	const { auth } = useAuth();
+	useEffect(() => {
+		const fetchData = async () => {
+			const res = await getAllUsers();
+			if (Array.isArray(res)) {
+				setUsers(res); // Ensure 'res' is an array before setting the state
+			}
+		};
+		fetchData();
+	}, []);
 
 	const stats: Stat[] = [
 		{
@@ -70,7 +70,7 @@ useEffect(() => {
 		<div className="flex bg-gray-100">
 			<main className="flex-1 px-6 py-6 overflow-auto">
 				<div className="grid gap-6">
-					<h2 className="text-3xl font-bold">Welcome back, Fares!</h2>
+					<h2 className="text-3xl font-bold">Welcome back, {auth?.username}!</h2>
 
 					{/* Statistics Section */}
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">

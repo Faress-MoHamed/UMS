@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Sidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Link, useLocation, useNavigate } from "react-router-dom"; // Import useLocation to detect active path
-import logo from "../assets/9c5672219055d43b0ffb2caf907f4b0d.jpeg";
 import usersIcon from "../assets/usersIcon.svg";
 import AddUserIcon from "../assets/AddUserIcon.svg";
 import LogoutIcon from "../assets/LogoutIcon.svg";
@@ -14,7 +13,7 @@ export default function SidebarContent() {
 	const [collapsed, setCollapsed] = useState(false);
 	const location = useLocation(); // Get the current location
 	const navigate = useNavigate();
-	const { setAuth } = useAuth();
+	const { setAuth, auth } = useAuth();
 
 	const handleCollapse = () => {
 		setCollapsed(!collapsed);
@@ -59,7 +58,7 @@ export default function SidebarContent() {
 			>
 				<div className="flex flex-col items-center mb-6">
 					<img
-						src={logo}
+						src={auth?.image}
 						alt="Profile"
 						className={`transition-all duration-300 ${
 							collapsed ? "w-10 h-10" : "w-[128px] h-[128px]"
@@ -67,8 +66,11 @@ export default function SidebarContent() {
 					/>
 					{!collapsed && (
 						<>
-							<h2 className="text-lg font-semibold">Karthi Madesh</h2>
-							<p className="text-sm text-[#FEAF00]">Admin</p>
+							<h2 className="text-lg font-semibold">
+								{auth?.firstName}
+								{auth?.lastName}
+							</h2>
+							<p className="text-sm text-[#FEAF00]">{auth?.email}</p>
 						</>
 					)}
 				</div>

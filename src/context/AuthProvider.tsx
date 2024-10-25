@@ -1,4 +1,10 @@
-import { createContext, useState, useContext, ReactNode } from "react";
+import {
+	createContext,
+	useState,
+	useContext,
+	ReactNode,
+	useEffect,
+} from "react";
 
 // Define the type for the auth state and the setAuth function
 interface AuthContextType {
@@ -34,7 +40,13 @@ export const useAuth = (): AuthContextType => {
 // AuthProvider component to wrap your app and provide the auth state
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [auth, setAuth] = useState<AuthState | null>(null);
-
+	
+	useEffect(() => {
+		const AuthUser = localStorage?.getItem("user");
+		if (AuthUser) {
+			setAuth(JSON.parse(AuthUser));
+		}
+	}, []);
 	return (
 		<AuthContext.Provider value={{ auth, setAuth }}>
 			{children}
