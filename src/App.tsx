@@ -5,7 +5,7 @@ import Users from "./pages/Users";
 import AddUser from "./pages/AddUser";
 import AuthLayout from "./pages/AuthLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Profile from "./pages/profile";
+import ProfileUser from "./pages/ProfileUser";
 
 export default function App() {
 	const routes = createBrowserRouter([
@@ -31,7 +31,7 @@ export default function App() {
 				},
 				{
 					path: "/profile",
-					element: <Profile />,
+					element: <ProfileUser />,
 				},
 			],
 		},

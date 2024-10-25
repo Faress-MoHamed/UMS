@@ -68,7 +68,7 @@ export default function SidebarContent() {
 					{!collapsed && (
 						<>
 							<h2 className="text-lg font-semibold">
-								{auth?.firstName}
+								{auth?.firstName}{" "}
 								{auth?.lastName}
 							</h2>
 							<p className="text-sm text-[#FEAF00]">{auth?.email}</p>
